@@ -1,9 +1,9 @@
 /*
  * ═══════════════════════════════════════════════════════════════
  *   validation-lib v1.0.0
- *   کتابخانهٔ اعتبارسنجی داده برای Taleforger
+ *   کتابخانهٔ اعتبارسنجی داده for Taleforger
  * ───────────────────────────────────────────────────────────────
- *   شامل ۱۸ تابع برای اعتبارسنجی انواع داده
+ *   شامل ۱۸ func for اعتبارسنجی انواع داده
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -34,26 +34,29 @@ export func isEmail(string email) -> bool {
 
     return true;
 }
-
 // isUrl(url) → بررسی اعتبار URL
 // نمونه: isUrl("https://example.com") → true
 export func isUrl(string url) -> bool {
     if (length(url) < 10) { return false; }
-    bool startsHttps = S.startsWith(url, "https://");
-    bool startsHttp  = S.startsWith(url, "http://");
-    if (!startsHttps && !startsHttp) { return false; }
 
-    string rest = S.substring(url, startsHttps ? 8 : 7, length(url));
+    int prefixLen = 0;
+    if (S.startsWith(url, "https://")) {
+        prefixLen = 8;
+    } else if (S.startsWith(url, "http://")) {
+        prefixLen = 7;
+    } else {
+        return false;
+    }
+
+    string rest = S.substring(url, prefixLen, length(url) - prefixLen);
     return length(rest) > 0 && S.contains(rest, ".");
 }
-
-
 // ═══════════════════════════════════════════════════════════════
 // ۲. شماره‌های ایران
 // ═══════════════════════════════════════════════════════════════
 
 // isNumericString(s) → همه ارقام؟
-// تابع کمکی داخلی
+// func کمکی داخلی
 func isNumericString(string s) -> bool {
     if (length(s) == 0) { return false; }
     for (int i = 0; i < length(s); i = i + 1) {
@@ -123,7 +126,7 @@ export func isPostalCode(string code) -> bool {
 // ۳. نام کاربری و رمز عبور
 // ═══════════════════════════════════════════════════════════════
 
-// isUsername(name) → نام کاربری معتبر (۳ تا ۲۰ کاراکتر، حروف/عدد/_)
+// isUsername(name) → نام کاربری معتبر (۳ تا ۲۰ کاراکتر، حروف/int/_)
 // نمونه: isUsername("ali_2026") → true
 export func isUsername(string name) -> bool {
     int len = length(name);
@@ -270,19 +273,19 @@ export func inRange(int value, int min, int max) -> bool {
     return value >= min && value <= max;
 }
 
-// minLength(s, n) → حداقل طول
+// minLength(s, n) → حداقل length
 // نمونه: minLength("hello", 3) → true
 export func minLength(string s, int n) -> bool {
     return length(s) >= n;
 }
 
-// maxLength(s, n) → حداکثر طول
+// maxLength(s, n) → حداکثر length
 // نمونه: maxLength("hi", 10) → true
 export func maxLength(string s, int n) -> bool {
     return length(s) <= n;
 }
 
-// isNotEmpty(s) → رشته غیرخالی؟
+// isNotEmpty(s) → string غیرخالی؟
 // نمونه: isNotEmpty("hi") → true
 export func isNotEmpty(string s) -> bool {
     return length(s) > 0;
