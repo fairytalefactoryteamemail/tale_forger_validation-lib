@@ -1,0 +1,11 @@
+{
+  "name": "validation-lib",
+  "version": "1.0.0",
+  "description": "Data validation library for Taleforger - email, mobile, national ID, and more",
+  "author": "Amir Hossein",
+  "license": "MIT",
+  "repository": "https://github.com/fairytalefactoryteamemail/validation-lib",
+  "entry": "src/main.tafo",
+  "dependencies": {},
+  "keywords": ["validation", "email", "phone", "iran", "form"]
+}

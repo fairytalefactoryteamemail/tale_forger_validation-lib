@@ -1,0 +1,66 @@
+/*
+ * نمونهٔ استفاده از validation-lib
+ */
+
+import "validation-lib" as V;
+import "Console" as C;
+import "String" as S;
+
+C.line(60, "═");
+C.gradient("validation-lib v1.0.0 – Demo", "cyan", "green");
+C.line(60, "═");
+
+// ─── ایمیل ───
+C.bold("📧 ایمیل");
+C.write("isEmail('ali@example.com')  = "); print(V.isEmail("ali@example.com"));
+C.write("isEmail('invalid-email')    = "); print(V.isEmail("invalid-email"));
+C.write("isEmail('ali@test')          = "); print(V.isEmail("ali@test"));
+print("");
+
+// ─── موبایل ───
+C.bold("📱 موبایل ایران");
+C.write("isMobile('09123456789')     = "); print(V.isMobile("09123456789"));
+C.write("isMobile('12345678901')     = "); print(V.isMobile("12345678901"));
+C.write("isMobile('09123')            = "); print(V.isMobile("09123"));
+print("");
+
+// ─── کد ملی ───
+C.bold("🆔 کد ملی");
+C.write("isNationalId('0499370899')  = "); print(V.isNationalId("0499370899"));
+C.write("isNationalId('1234567890')  = "); print(V.isNationalId("1234567890"));
+C.write("isNationalId('1111111111')  = "); print(V.isNationalId("1111111111"));
+print("");
+
+// ─── رمز عبور ───
+C.bold("🔐 رمز عبور");
+C.write("passwordStrength('abc')           = "); print(V.passwordStrength("abc"));
+C.write("passwordStrength('abcdef')        = "); print(V.passwordStrength("abcdef"));
+C.write("passwordStrength('Abc123!@#')     = "); print(V.passwordStrength("Abc123!@#"));
+C.write("isStrongPassword('Abc123!@#')     = "); print(V.isStrongPassword("Abc123!@#"));
+print("");
+
+// ─── نام کاربری ───
+C.bold("👤 نام کاربری");
+C.write("isUsername('ali_2026')      = "); print(V.isUsername("ali_2026"));
+C.write("isUsername('ab')             = "); print(V.isUsername("ab"));
+C.write("isUsername('علی')            = "); print(V.isUsername("علی"));
+print("");
+
+// ─── URL و IPv4 ───
+C.bold("🌐 URL و IPv4");
+C.write("isUrl('https://github.com') = "); print(V.isUrl("https://github.com"));
+C.write("isUrl('not a url')           = "); print(V.isUrl("not a url"));
+C.write("isIpv4('192.168.1.1')       = "); print(V.isIpv4("192.168.1.1"));
+C.write("isIpv4('999.999.999.999')   = "); print(V.isIpv4("999.999.999.999"));
+print("");
+
+// ─── رنگ ───
+C.bold("🎨 رنگ هگز");
+C.write("isHexColor('#ff0000')        = "); print(V.isHexColor("#ff0000"));
+C.write("isHexColor('#abc')           = "); print(V.isHexColor("#abc"));
+C.write("isHexColor('#xyz')           = "); print(V.isHexColor("#xyz"));
+print("");
+
+C.line(60, "═");
+C.gradient("✅ پایان Demo", "green", "cyan");
+C.line(60, "═");

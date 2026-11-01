@@ -1,0 +1,289 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *   validation-lib v1.0.0
+ *   کتابخانهٔ اعتبارسنجی داده برای Taleforger
+ * ───────────────────────────────────────────────────────────────
+ *   شامل ۱۸ تابع برای اعتبارسنجی انواع داده
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+import "String" as S;
+
+
+// ═══════════════════════════════════════════════════════════════
+// ۱. ایمیل و URL
+// ═══════════════════════════════════════════════════════════════
+
+// isEmail(email) → بررسی اعتبار ایمیل
+// نمونه: isEmail("ali@example.com") → true
+export func isEmail(string email) -> bool {
+    int len = length(email);
+    if (len < 5 || len > 254) { return false; }
+    if (S.contains(email, " ") || S.contains(email, "\t")) { return false; }
+
+    int atPos = S.indexOf(email, "@");
+    if (atPos < 1) { return false; }
+
+    // فقط یک @
+    if (S.indexOf(S.substring(email, atPos + 1, len - atPos - 1), "@") >= 0) { return false; }
+
+    // دامنه باید حداقل یک نقطه داشته باشد
+    string domain = S.substring(email, atPos + 1, len - atPos - 1);
+    int dotPos = S.indexOf(domain, ".");
+    if (dotPos < 1 || dotPos >= length(domain) - 1) { return false; }
+
+    return true;
+}
+
+// isUrl(url) → بررسی اعتبار URL
+// نمونه: isUrl("https://example.com") → true
+export func isUrl(string url) -> bool {
+    if (length(url) < 10) { return false; }
+    bool startsHttps = S.startsWith(url, "https://");
+    bool startsHttp  = S.startsWith(url, "http://");
+    if (!startsHttps && !startsHttp) { return false; }
+
+    string rest = S.substring(url, startsHttps ? 8 : 7, length(url));
+    return length(rest) > 0 && S.contains(rest, ".");
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// ۲. شماره‌های ایران
+// ═══════════════════════════════════════════════════════════════
+
+// isNumericString(s) → همه ارقام؟
+// تابع کمکی داخلی
+func isNumericString(string s) -> bool {
+    if (length(s) == 0) { return false; }
+    for (int i = 0; i < length(s); i = i + 1) {
+        int c = S.charCodeAt(s, i);
+        if (c < 48 || c > 57) { return false; }
+    }
+    return true;
+}
+
+// isMobile(phone) → موبایل ایران (09xxxxxxxxx)
+// نمونه: isMobile("09123456789") → true
+export func isMobile(string phone) -> bool {
+    if (length(phone) != 11) { return false; }
+    if (!S.startsWith(phone, "09")) { return false; }
+    return isNumericString(phone);
+}
+
+// isPhone(phone) → تلفن ایران (۰ + ۱۰ رقم)
+// نمونه: isPhone("02112345678") → true
+export func isPhone(string phone) -> bool {
+    if (length(phone) != 11) { return false; }
+    if (!S.startsWith(phone, "0")) { return false; }
+    return isNumericString(phone);
+}
+
+// isNationalId(code) → کد ملی ایران (با چک‌سام)
+// نمونه: isNationalId("0499370899") → true
+export func isNationalId(string code) -> bool {
+    if (length(code) != 10) { return false; }
+    if (!isNumericString(code)) { return false; }
+
+    // همه ارقام یکسان نباشند
+    bool allSame = true;
+    int firstChar = S.charCodeAt(code, 0);
+    for (int i = 1; i < 10; i = i + 1) {
+        if (S.charCodeAt(code, i) != firstChar) {
+            allSame = false;
+        }
+    }
+    if (allSame) { return false; }
+
+    // چک‌سام
+    int sum = 0;
+    for (int i = 0; i < 9; i = i + 1) {
+        int digit = S.charCodeAt(code, i) - 48;
+        sum = sum + digit * (10 - i);
+    }
+    int remainder = sum % 11;
+    int checkDigit = S.charCodeAt(code, 9) - 48;
+
+    if (remainder < 2) {
+        return checkDigit == remainder;
+    } else {
+        return checkDigit == 11 - remainder;
+    }
+}
+
+// isPostalCode(code) → کد پستی ایران (۱۰ رقم)
+// نمونه: isPostalCode("1234567890") → true
+export func isPostalCode(string code) -> bool {
+    if (length(code) != 10) { return false; }
+    return isNumericString(code);
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// ۳. نام کاربری و رمز عبور
+// ═══════════════════════════════════════════════════════════════
+
+// isUsername(name) → نام کاربری معتبر (۳ تا ۲۰ کاراکتر، حروف/عدد/_)
+// نمونه: isUsername("ali_2026") → true
+export func isUsername(string name) -> bool {
+    int len = length(name);
+    if (len < 3 || len > 20) { return false; }
+    if (S.startsWith(name, "_")) { return false; }
+
+    for (int i = 0; i < len; i = i + 1) {
+        int c = S.charCodeAt(name, i);
+        bool isDigit  = c >= 48 && c <= 57;
+        bool isUpper  = c >= 65 && c <= 90;
+        bool isLower  = c >= 97 && c <= 122;
+        bool isUnder  = c == 95;
+        if (!isDigit && !isUpper && !isLower && !isUnder) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// isStrongPassword(pwd) → رمز قوی (۸+ کاراکتر، حرف بزرگ، کوچک، رقم، علامت)
+// نمونه: isStrongPassword("Abc123!@#") → true
+export func isStrongPassword(string pwd) -> bool {
+    int len = length(pwd);
+    if (len < 8) { return false; }
+
+    bool hasUpper  = false;
+    bool hasLower  = false;
+    bool hasDigit  = false;
+    bool hasSymbol = false;
+
+    for (int i = 0; i < len; i = i + 1) {
+        int c = S.charCodeAt(pwd, i);
+        if (c >= 65 && c <= 90) { hasUpper = true; }
+        else if (c >= 97 && c <= 122) { hasLower = true; }
+        else if (c >= 48 && c <= 57) { hasDigit = true; }
+        else { hasSymbol = true; }
+    }
+
+    return hasUpper && hasLower && hasDigit && hasSymbol;
+}
+
+// passwordStrength(pwd) → "weak" | "medium" | "strong"
+// نمونه: passwordStrength("abc") → "weak"
+export func passwordStrength(string pwd) -> string {
+    int len = length(pwd);
+    if (len < 6) { return "weak"; }
+
+    bool hasUpper  = false;
+    bool hasLower  = false;
+    bool hasDigit  = false;
+    bool hasSymbol = false;
+
+    for (int i = 0; i < len; i = i + 1) {
+        int c = S.charCodeAt(pwd, i);
+        if (c >= 65 && c <= 90) { hasUpper = true; }
+        else if (c >= 97 && c <= 122) { hasLower = true; }
+        else if (c >= 48 && c <= 57) { hasDigit = true; }
+        else { hasSymbol = true; }
+    }
+
+    int score = 0;
+    if (hasUpper)  { score = score + 1; }
+    if (hasLower)  { score = score + 1; }
+    if (hasDigit)  { score = score + 1; }
+    if (hasSymbol) { score = score + 1; }
+
+    if (len >= 8 && score >= 4) { return "strong"; }
+    if (len >= 6 && score >= 2) { return "medium"; }
+    return "weak";
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// ۴. تاریخ، زمان، IPv4، رنگ
+// ═══════════════════════════════════════════════════════════════
+
+// isDate(s) → تاریخ yyyy-mm-dd
+// نمونه: isDate("2026-10-06") → true
+export func isDate(string s) -> bool {
+    if (length(s) != 10) { return false; }
+    if (S.charAt(s, 4) != "-" || S.charAt(s, 7) != "-") { return false; }
+
+    string year  = S.substring(s, 0, 4);
+    string month = S.substring(s, 5, 2);
+    string day   = S.substring(s, 8, 2);
+
+    if (!isNumericString(year) || !isNumericString(month) || !isNumericString(day)) {
+        return false;
+    }
+    return true;
+}
+
+// isTime(s) → ساعت HH:MM:SS
+// نمونه: isTime("14:30:00") → true
+export func isTime(string s) -> bool {
+    if (length(s) != 8) { return false; }
+    if (S.charAt(s, 2) != ":" || S.charAt(s, 5) != ":") { return false; }
+
+    string hh = S.substring(s, 0, 2);
+    string mm = S.substring(s, 3, 2);
+    string ss = S.substring(s, 6, 2);
+    return isNumericString(hh) && isNumericString(mm) && isNumericString(ss);
+}
+
+// isIpv4(s) → IPv4
+// نمونه: isIpv4("192.168.1.1") → true
+export func isIpv4(string s) -> bool {
+    list parts = S.split(s, ".");
+    if (length(parts) != 4) { return false; }
+
+    for (int i = 0; i < 4; i = i + 1) {
+        string part = parts[i] as string;
+        if (length(part) == 0 || length(part) > 3) { return false; }
+        if (!isNumericString(part)) { return false; }
+    }
+    return true;
+}
+
+// isHexColor(s) → رنگ هگز #RRGGBB یا #RGB
+// نمونه: isHexColor("#ff0000") → true
+export func isHexColor(string s) -> bool {
+    int len = length(s);
+    if (len != 4 && len != 7) { return false; }
+    if (!S.startsWith(s, "#")) { return false; }
+
+    for (int i = 1; i < len; i = i + 1) {
+        int c = S.charCodeAt(s, i);
+        bool isDigit = c >= 48 && c <= 57;
+        bool isUpper = c >= 65 && c <= 70;
+        bool isLower = c >= 97 && c <= 102;
+        if (!isDigit && !isUpper && !isLower) { return false; }
+    }
+    return true;
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// ۵. عمومی
+// ═══════════════════════════════════════════════════════════════
+
+// inRange(value, min, max) → آیا در بازه است؟
+// نمونه: inRange(5, 1, 10) → true
+export func inRange(int value, int min, int max) -> bool {
+    return value >= min && value <= max;
+}
+
+// minLength(s, n) → حداقل طول
+// نمونه: minLength("hello", 3) → true
+export func minLength(string s, int n) -> bool {
+    return length(s) >= n;
+}
+
+// maxLength(s, n) → حداکثر طول
+// نمونه: maxLength("hi", 10) → true
+export func maxLength(string s, int n) -> bool {
+    return length(s) <= n;
+}
+
+// isNotEmpty(s) → رشته غیرخالی؟
+// نمونه: isNotEmpty("hi") → true
+export func isNotEmpty(string s) -> bool {
+    return length(s) > 0;
+}

@@ -1,0 +1,91 @@
+/*
+ * تست کامل validation-lib
+ * اجرا: taleforger tests/test.tafo
+ */
+
+import "validation-lib" as V;
+import "Console" as C;
+
+int total = 0;
+int passed = 0;
+int failed = 0;
+
+func check(string name, bool actual, bool expected) {
+    total = total + 1;
+    if (actual == expected) {
+        passed = passed + 1;
+        C.color("  ✓ " + name, "green");
+    } else {
+        failed = failed + 1;
+        C.color("  ✗ " + name + " (expected " + expected + ", got " + actual + ")", "red");
+    }
+}
+
+C.bold("Testing validation-lib");
+C.line(60, "═");
+print("");
+
+// ─── Email ───
+C.bold("Email:");
+check("ali@example.com",  V.isEmail("ali@example.com"),  true);
+check("a@b.co",           V.isEmail("a@b.co"),           true);
+check("invalid",          V.isEmail("invalid"),          false);
+check("@no-user.com",     V.isEmail("@no-user.com"),     false);
+check("no@",              V.isEmail("no@"),              false);
+check("with space",       V.isEmail("a b@c.com"),        false);
+print("");
+
+// ─── Mobile ───
+C.bold("Mobile:");
+check("09123456789",      V.isMobile("09123456789"),     true);
+check("0912345678",       V.isMobile("0912345678"),      false);
+check("08123456789",      V.isMobile("08123456789"),     false);
+check("0912345678a",      V.isMobile("0912345678a"),     false);
+print("");
+
+// ─── National ID ───
+C.bold("National ID:");
+check("0499370899 (valid)", V.isNationalId("0499370899"), true);
+check("1234567890 (invalid)", V.isNationalId("1234567890"), false);
+check("1111111111 (all same)", V.isNationalId("1111111111"), false);
+check("123456789 (9 digits)", V.isNationalId("123456789"),  false);
+print("");
+
+// ─── Password ───
+C.bold("Password:");
+check("abc → weak",       V.passwordStrength("abc") == "weak",       true);
+check("abcdef → medium",  V.passwordStrength("abcdef") == "medium",  true);
+check("Abc123!@# → strong", V.passwordStrength("Abc123!@#") == "strong", true);
+check("isStrongPassword", V.isStrongPassword("Abc123!@#"), true);
+check("isStrong(short)",  V.isStrongPassword("Ab1!"),     false);
+print("");
+
+// ─── Username ───
+C.bold("Username:");
+check("ali_2026",         V.isUsername("ali_2026"),      true);
+check("ab (too short)",   V.isUsername("ab"),            false);
+check("_ali (starts _)",  V.isUsername("_ali"),          false);
+check("ali@ (invalid)",   V.isUsername("ali@"),          false);
+print("");
+
+// ─── General ───
+C.bold("General:");
+check("inRange(5,1,10)",  V.inRange(5, 1, 10),  true);
+check("inRange(15,1,10)", V.inRange(15, 1, 10), false);
+check("minLength",        V.minLength("hello", 3), true);
+check("maxLength",        V.maxLength("hi", 10),   true);
+check("isNotEmpty",       V.isNotEmpty("hi"),   true);
+check("isNotEmpty empty", V.isNotEmpty(""),     false);
+print("");
+
+// ─── نتیجه ───
+C.line(60, "═");
+C.bold("نتیجه:");
+print("  Total:  " + total);
+C.color("  Passed: " + passed, "green");
+if (failed > 0) {
+    C.color("  Failed: " + failed, "red");
+} else {
+    print("  Failed: 0");
+}
+C.line(60, "═");
