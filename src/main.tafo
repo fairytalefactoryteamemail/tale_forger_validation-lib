@@ -231,6 +231,7 @@ export func isTime(string s) -> bool {
     return isNumericString(hh) && isNumericString(mm) && isNumericString(ss);
 }
 
+
 // isIpv4(s) → IPv4
 // نمونه: isIpv4("192.168.1.1") → true
 export func isIpv4(string s) -> bool {
@@ -238,7 +239,7 @@ export func isIpv4(string s) -> bool {
     if (length(parts) != 4) { return false; }
 
     for (int i = 0; i < 4; step 1) {
-        string part = parts[i] as string;
+        string part = parts[i];              // ← as string حذف شد
         if (length(part) == 0 || length(part) > 3) { return false; }
         if (!isNumericString(part)) { return false; }
     }
