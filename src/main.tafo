@@ -59,7 +59,7 @@ export func isUrl(string url) -> bool {
 // func کمکی داخلی
 func isNumericString(string s) -> bool {
     if (length(s) == 0) { return false; }
-    for (int i = 0; i < length(s); i = i + 1) {
+    for (int i = 0; i < length(s);step 1) {
         int c = S.charCodeAt(s, i);
         if (c < 48 || c > 57) { return false; }
     }
@@ -157,7 +157,7 @@ export func isStrongPassword(string pwd) -> bool {
     bool hasDigit  = false;
     bool hasSymbol = false;
 
-    for (int i = 0; i < len; i = i + 1) {
+    for (int i = 0; i < len; step 1) {
         int c = S.charCodeAt(pwd, i);
         if (c >= 65 && c <= 90) { hasUpper = true; }
         else if (c >= 97 && c <= 122) { hasLower = true; }
@@ -179,7 +179,7 @@ export func passwordStrength(string pwd) -> string {
     bool hasDigit  = false;
     bool hasSymbol = false;
 
-    for (int i = 0; i < len; i = i + 1) {
+    for (int i = 0; i < len;step 1) {
         int c = S.charCodeAt(pwd, i);
         if (c >= 65 && c <= 90) { hasUpper = true; }
         else if (c >= 97 && c <= 122) { hasLower = true; }
